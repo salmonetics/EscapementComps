@@ -1,0 +1,1339 @@
+<html>
+<head>
+    <title>Escapement Comparisons</title>
+
+    <meta charset="UTF-8">
+	
+	<link rel="stylesheet" type="text/css" href="/script/dc.js/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/script/dc.js/dc.css"/>
+	<script src="/script/jquery-1.12.2.min.js"></script>
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/script/dc.js/colorbrewer.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>	
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<style>	
+text {
+	font: 18px sans-serif;
+	font-weight: bold;
+}	
+	
+#help{
+	width: 1150px;
+}	
+#about{
+	width: 1150px;
+}
+.esu_block{
+	background-color: #33b4ff;
+}	
+.mpg_block1{
+	background-color: #f2f2f2;
+}
+.mpg_block2{
+	background-color: #e6e6e6;
+}	
+select{
+	width: auto;
+}
+	
+.sized{
+	width: 600px;
+	overflow: scroll;
+}
+#dataview{
+	height: 100px;
+	width: 400px;
+	overflow: auto;
+	margin-left: 50px;
+	margin-bottom: 100px;
+}
+#esu_label{
+	text-align: center;
+	font: 12px sans-serif;
+}	
+.poplabel{
+	margin-left: 20px;
+	margin-right: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+#metaheader{
+	height: 80px;
+}	
+#metamap{
+	height: 500px;
+	top: 525px;
+	position: relative;
+}
+
+
+#cfilters{
+	position: relative;
+}
+
+#metafooter{
+	position: relative;
+	top: 410px;
+}
+	
+.area {
+  fill: url(#temperature-gradient);
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.curse line {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px
+}
+
+.curse text, line {
+	opacity: 0.5;
+}
+
+.line2 {
+  stroke: black;
+  stroke-width: 4px;
+  fill: black;
+}
+	.control {margin:5px;}
+	#spawn{
+	  overflow: hidden;
+	}
+	#hatch{
+	  overflow: hidden;
+	}	
+	#agec{
+	  overflow: hidden;
+	}
+	#meta{
+	  overflow: hidden;
+	}	
+	#divmap {
+      width:500px;
+      height:400px;
+	  background-image: url(river_background.jpg);
+    }
+	#filters {
+		border-right-style: solid;
+		border-width: 2px;
+		border-color: #cccccc;
+	}
+	
+	g.tick text{
+		cursor: pointer;
+	}
+	
+	g.z {
+		font-size: 11px;
+	}
+	
+	.map {
+      width:600px;
+      height:400px;
+    }
+	
+	#obsmap {
+		height: 600px;
+		width: 800px;
+	}
+	
+	#datarow {
+		height: 300px;
+		overflow: scroll;
+	}
+	.river path{
+				fill: none;
+				stroke: #0570b0;
+				stroke-width: 2;
+			}
+	.borders path{
+				fill: none;
+				stroke: black;
+			}
+	#spinner * { 
+		filter: none; 
+		-moz-opacity: 100%; 
+		position: absolute;
+		top: 200px;
+		left: 650px;
+		}
+		
+div.tooltip {   
+  position: absolute;           
+  text-align: left;                            
+  padding: 2px;             
+  font: 16px sans-serif;        
+  background: #ccc;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+svg	{ overflow: hidden; }
+	
+	table {
+	margin: 10px;
+	padding-top: 2px;
+    padding-right: 10px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+	}
+	
+.dc-table-label {
+font-weight: bold;
+}
+
+.header th {
+text-align: center;	
+}
+
+.span14{
+	margin-top: 25px;
+}
+
+.tiptable {
+	font: 12px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #000000;
+}
+.grid .tick {
+    stroke: grey;
+    opacity: 0.5 !important;
+}
+.bar rect {
+        fill: #ed1e79;
+    }
+
+    .bar text.value {
+        fill: black;
+    }
+    circle {
+    fill: none;
+    stroke: black; 
+    stroke-width: 1;
+}
+
+.legend text{
+	font: 12px sans-serif;
+}
+
+.checkbox-dropdown {
+
+    width: 150px;
+    border: 1px solid silver;
+    cursor: pointer; /* use correct mouse pointer when hovering over the dropdown */
+    padding: 1px;
+    position: relative;
+    margin: 0 auto;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Display CSS arrow to the right of the dropdown text */
+.checkbox-dropdown:after {
+    content:'';
+    height: 0;
+    position: relative;
+    width: 0;
+    border: 6px solid transparent;
+    border-top-color: #000;
+    top: 0px;
+    right: 0px;
+
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    margin-top: -6px;
+    border-width: 6px 0 6px 6px;
+    border-style: solid;
+    border: 6px solid transparent;
+    border-top-color: #000; 	
+}
+
+/* Reverse the CSS arrow when the dropdown is active */
+.checkbox-dropdown.is-active:after {
+    border-bottom-color: #000;
+    border-top-color: #fff;
+    margin-top: -9px;
+}
+
+.checkbox-dropdown-list {
+	width: 150px;
+	background-color: aliceblue;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%; /* align the dropdown right below the dropdown text */
+    border: inherit;
+    border-top: none;
+    left: -1px; /* align the dropdown to the left */
+    right: -1px; /* align the dropdown to the right */
+    opacity: 0; /* hide the dropdown */
+    -webkit-transition: opacity 0.1s ease-in-out;
+    -moz-transition: opacity 0.1s ease-in-out;
+    -o-transition: opacity 0.1s ease-in-out;
+    -ms-transition: opacity 0.1s ease-in-out;
+    transition: opacity 0.1s ease-in-out;
+    pointer-events: none; /* avoid mouse click events inside the dropdown */
+}
+.is-active .checkbox-dropdown-list {
+    opacity: 1; /* display the dropdown */
+    pointer-events: auto; /* make sure that the user still can select checkboxes */
+}
+
+.checkbox-dropdown-list li label {
+    display: block;
+	margin-top: 5px;
+    border-bottom: 1px solid silver;
+    padding: 0px;
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    -ms-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+.checkbox-dropdown-list li label:hover {
+
+}
+
+li{
+	margin-left: 5px;
+}
+
+.mpg_block{
+	background-color: "gray";
+}
+	</style>
+
+	
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="span16">
+<h2>Columbia Basin Escapement Comparisons</h2>
+</div>
+</div>
+
+<div class="row">
+<div class="span16" id="filters">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#escape">Escapement</a></li>
+	<li><a data-toggle="tab" href="#about">About</a></li>
+	<li><a data-toggle="tab" href="#help">Help</a></li>
+  </ul>
+
+<div class="tab-content">
+
+    <div id="escape" class="tab-pane fade in active">
+	<div class="span16">
+	<table cellspacing = "5">
+	<tr>
+	<td align="left">
+		<span class="dropdown_text">ESU/DPS</span> <select onChange="toggleESU(this)" class="toggleESU">
+		<option value="srchinook">Snake River Spring/Summer Chinook Salmon ESU</option>
+		<option value="ucchinook">Upper Columbia River Spring Chinook Salmon ESU</option>
+		<option value="fallchinook">Snake River Fall Chinook Salmon ESU</option>
+		<option value="ucsteelhead">Upper Columbia River Steelhead DPS</option>
+		<option value="srsteelhead">Snake River Steelhead DPS</option>
+		<option value="bsteelhead">Snake River B-run Steelhead</option>
+		<option value="sockeye">Snake River Sockeye DPS</option>
+		<option value="yakima">Yakima River MPG Steelhead</option>
+		</select>
+	</td>
+
+	<td align="center" width="300">
+		<div class="checkbox-dropdown dropdown_text">Plot Options<ul class="checkbox-dropdown-list"><li><b>Palette:</b></li>
+            <li>
+                <select id="colorpicker" onchange="toggleColorPicker(this)"></select></li>
+		</ul>
+		</div>
+	</td>	
+	<td align="left" width="300">
+	<div class="checkbox-dropdown dropdown_text">Display Options
+        <ul class="checkbox-dropdown-list">
+			<li>
+                <label>
+					<input type="checkbox" name="disp_geomean5" class="disp_geomean5" onchange="params.display.geomean5=this.checked; plotData()"/>&nbsp;Show 5y geomean</label></li>
+            <li>
+                <label>
+					<input type="checkbox" name="disp_geomean10" class="disp_geomean10" onchange="params.display.geomean10=this.checked; plotData()"/>&nbsp;Show 10y geomean</label></li>
+			<li>
+                <label>
+					<input type="checkbox" name="disp_mean4yr" class="disp_mean4yr" onchange="params.display.mean4yr=this.checked; plotData()"/>&nbsp;Show 4yr mean</label></li>	
+			<li>
+                <label>
+					<input type="checkbox" name="disp_mean10yr" class="disp_mean10yr" onchange="params.display.mean10yr=this.checked; plotData()"/>&nbsp;Show 10yr mean</label></li>	
+            <li>
+                <label>
+					<input type="checkbox" name="disp_etrend" class="disp_etrend" onchange="params.display.etrend=this.checked; plotData()"/>&nbsp;Show trend</label></li>
+            <li>
+                <label>
+					<input type="checkbox" name="disp_MAT" class="disp_MAT" onchange="params.display.MAT=this.checked; plotData()" checked/>&nbsp;Show MAT</label></li>					
+			<li>
+					<label>
+					<input type="checkbox" name="disp_spawners" class="disp_spawners" onchange="params.display.spawners=this.checked; plotData()" checked/>&nbsp;Show spawners</label></li>	
+			<li>
+					<label>
+					&nbsp;&nbsp;<input type="checkbox" name="disp_hos" class="disp_hos" onchange="params.display.hos=this.checked; plotData()"/>&nbsp;Include HOS</label></li>	
+
+					<li>
+					<label>
+					<input type="checkbox" name="disp_damcount" class="disp_damcount" onchange="params.display.damcount=this.checked; plotData()"/>&nbsp;Show dam counts</label></li>
+			<li>
+					<label>
+					<input type="checkbox" name="disp_escape" class="disp_escape" onchange="params.display.escapement=this.checked; plotData()" checked/>&nbsp;Show escapements</label></li>	
+		</ul>
+    </div>
+	</td>
+	</tr>
+	</table>
+	<div id="svgdiv"></div>
+	</div>	
+	</div>
+
+	<div id="about" class="tab-pane fade">
+	<div id="about-tab" class="control">
+
+		<p>
+		<b>Contact</b><br>
+		This Tool is still in development and we welcome your feedback. Please send comments to:<br><a href="mailto://brianm@salmonetics.com">Brian Maschhoff</a> or <a href="mailto://rich@hinrichsenenvironmental.com">Rich Hinrichsen</a>.
+		</p>
+		<p>Support for development was provided by the Bonneville Power Administration.
+		<br/>
+		<img src="logos.jpg" usemap="#logomap">
+
+		<map name="logomap">
+			<area shape="rect" coords="0,0,118,100" href="http://www.bpa.gov" alt="Bonneville Power Administration" target="_new">
+			<area shape="rect" coords="119,0,275,100" href="http://www.salmonetics.com" alt="Salmonetics" target="_new">
+			<area shape="rect" coords="275,0,434,100" href="http://www.hinrichsenenvironmental.com" alt="Hinrichsen Environmental" target="_new">
+		</map>
+		</p>
+	</div>
+	</div>	
+	<div id="help" class="tab-pane fade">
+	<div id="help-tab" class="control">
+		<p>
+		<b>Browser Requirements</b>
+		<ol>
+			<li>A reasonably recent browser (Chrome, IE, Firefox, Opera, Safari)</li>
+			<li>At least 1280 horizontal pixels in browser window. Decrease magnification if necessary</li>
+		</ol>
+		
+		</p>	
+		<p>
+		<b>Usage Hints</b>
+
+		</p>
+
+	</div>
+	</div>	
+	
+</div>  
+
+</div>
+</div>
+
+
+</div> <!--end container-->
+<div id="spinner"><img src="/images/spinner.gif"></div>
+</body>
+
+<script>
+
+var params = {
+	selected: "srchinook",
+	escdata: {
+	srchinook: {name: "Snake River Spring/Summer Chinook Salmon ESU", field: "Snake R S/S Chinook (LGR+Tuc)", esu: "Salmon, Chinook (Snake River spring/summer-run ESU)",data: [], max: 0, MAT: 24750, CT: 7425, Delist:17250},
+	ucchinook: {name: "Upper Columbia River Spring Chinook Salmon ESU", field: "UCR Spring Chinook@RIS", esu: "Salmon, Chinook (Upper Columbia River spring-run ESU)",data: [], max: 0, MAT: 4500, CT: 1575, Delist:4500},
+	fallchinook: {name: "Snake River Fall Chinook Salmon ESU", field: "SR Fall Chinook@LGR", esu: "Salmon, Chinook (Snake River fall-run ESU)",data: [], max: 0, MAT: 3000, CT: 900, Delist:3000},
+	ucsteelhead: {name: "Upper Columbia River Steelhead DPS", field: "UCR Sthd@PRD", esu: "Steelhead (Upper Columbia River DPS)",data: [], max: 0, MAT: 3500, CT: 1050, Delist:3500},
+	srsteelhead: {name: "Snake River Steelhead DPS", field: "SR Steelhead@LGR", esu: "Steelhead (Snake River Basin DPS)",data: [], max: 0, MAT: 22500, CT: 6750, Delist:13075},
+	bsteelhead: {name: "Snake River B-run Steelhead", field: "SR Sthd - B-run @LGR", esu: "",data: [], max: 0},
+	sockeye: {name: "Snake River Sockeye DPS", field: "SR Sockeye", esu: "Salmon, sockeye (Snake River ESU)",data: [], max: 0},
+	yakima: {name: "Yakima River MPG Steelhead", field: "Mid-C Sthd@PRO", esu: "Steelhead (Middle Columbia River DPS)",data: [], max: 0, MAT: 4500, CT: 1350, Delist:3250}
+	},
+	spawndata: {},
+	svg: {
+		height: 600,
+		width: 1000,
+		margin: {top: 10, left: 100, right: 210, bottom: 50},
+		palette: "Greens",
+		legend: {
+			spawners: {x: 828, y: 500},
+			escapement: {x: 828, y: 425},
+			damcount: {x: 828, y: 405},
+			MAT: {x: 828, y: 385},
+		}		
+	},
+	svg2: {
+		height: 250,
+		width: 1000,
+		margin: {top: 20, left: 100, right: 210, bottom: 50},
+		palette: "Greens",
+		legend: {
+			spawners: {x: 828, y: 500},
+			escapement: {x: 828, y: 425},
+			damcount: {x: 828, y: 405},
+			flows: {x: 893, y: 10}
+		}		
+	},	
+	display: {
+		geomean5: false,
+		geomean10: false,
+		mean4yr: false,
+		mean10yr: false,
+		etrend: false,
+		MAT: true,		
+		damcount: false,
+		escapement: true,
+		spawners: true,
+		hos: false
+	}
+}
+
+var buildColorPicker = function(){
+d3.select("#colorpicker")
+  .selectAll(".palette")
+    .data(d3.entries(colorbrewer))
+  .enter().append("option")
+    .attr("class", "palette")
+	.property("value",function(d) { 
+        return d.key;
+	})
+	.text(function(d) { 
+        return d.key;
+	})
+}
+
+buildColorPicker();
+d3.select("#colorpicker").property("selectedIndex",Object.keys(colorbrewer).indexOf(params.svg.palette))
+
+var toggleColorPicker = function(_select){
+	var palettes = Object.keys(colorbrewer)
+	params.svg.palette = palettes[_select.selectedIndex];
+	plotData();
+}
+
+var field_lookup = {}
+Object.keys(params.escdata).forEach(function(d){
+	field_lookup[params.escdata[d].field] = params.escdata[d]
+})
+
+
+var tipdiv = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+	
+var toggleESU = function(obj){
+	params.selected = obj.options[obj.selectedIndex].value
+	plotData();
+}
+
+var esu_sums = {};
+
+var plotData = function(){
+	var escdata = params.escdata[params.selected];
+	var spawndata = params.spawndata[escdata.esu];
+	var damdata = params.damdata[params.selected]
+	//console.log(damdata)
+	//console.log(spawndata)
+	
+	var datamax = [0];
+	
+	damdata_max=0
+	
+	if(damdata && params.display.damcount){
+		console.log("including damdata")
+		damdata.forEach(function(d){
+			d.count = +d.count;
+			if(d.count>damdata_max)damdata_max=d.count
+		});
+		datamax.push(damdata_max);
+	}	
+	
+	var spawndata_max = 0;
+	var spawnoffsets = {};
+	var sdata;
+	var spawnvar;
+	if(spawndata){
+		spawnvar = params.display.hos ? "TCOUNT" : "COUNT";
+		sdata = [];
+		var mpg_names = [];
+		spawndata.mpgs.forEach(function(d,i){
+			d.data.forEach(function(dd){
+				dd.offset = 0;
+				dd.mpg = i;
+				if(spawnoffsets[dd.SPAWNINGYEAR]){
+					dd.offset = spawnoffsets[dd.SPAWNINGYEAR];
+					spawnoffsets[dd.SPAWNINGYEAR] += dd[spawnvar];
+				}
+				else spawnoffsets[dd.SPAWNINGYEAR] = dd[spawnvar];
+				dd.name = d.name;
+				sdata.push(dd);
+				if(dd.offset > spawndata_max)spawndata_max = dd.offset
+			});
+			mpg_names.push(d.name);
+			datamax.push(spawndata_max)
+		})
+	}
+	
+	//var global_max = escdata.max;
+	
+	if(params.display.escapement)datamax.push(escdata.max)
+	
+	function getMaxOfArray(numArray) {
+		return Math.max.apply(null, numArray);
+	}
+	console.log("datamax")
+	console.log(datamax)
+	var global_max = getMaxOfArray(datamax);
+	
+	var margin = params.svg.margin;
+	var height = params.svg.height - margin.top - margin.bottom;
+	var width = params.svg.width - margin.left - margin.right;
+	
+	var x = d3.scale.linear().domain([1978,2017]).range([0, width]), // value -> display
+	y = d3.scale.linear().domain([0,(global_max)*1.1]).range([height,0]), // value -> display
+	xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.format("d")),
+	yAxis = d3.svg.axis().scale(y).orient("left");
+
+	var bwidth = x(2000)-x(1999);
+	var bwidth1 = bwidth*.8;
+	var bwidth2 = bwidth1/2;
+	
+	d3.select("#svgdiv").selectAll("svg").remove()
+	var svg0 = d3.select("#svgdiv")
+		.append("svg")
+		.attr("id","mainsvg")
+		.attr("height",params.svg.height)
+		.attr("width",params.svg.width)
+		
+	svg0.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + margin.left + "," + (margin.top + height) + ")")
+      .call(xAxis)
+
+	svg0.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(yAxis)
+	  
+	if(params.display.damcount && damdata){
+	svg0.append("g")
+		.attr("class","damcounts")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.selectAll("rect")
+		.data(damdata)
+		.enter()
+		.append("rect")
+		.attr("width", bwidth1)
+		.attr("x",function(d){
+			return x(+d.year)-bwidth2;
+		})
+		.attr("y", function(d,i) {
+			return y(+d.count);
+		})
+		.attr("height", function(d) { 
+			return height - y(+d.count)
+		})
+		.style("fill","DimGray")
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th>Count:<td>' + d.count +  '</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});		
+	
+
+
+	}
+	
+	if(params.display.escapement){
+	
+	svg0.append("g")
+		.attr("class","escapements")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.selectAll("rect")
+		.data(escdata.data)
+		.enter()
+		.append("rect")
+		.attr("width", bwidth1)
+		.attr("x",function(d){
+			return x(+d.year)-bwidth2;
+		})
+		.attr("y", function(d,i) {
+			return y(+d.count);
+		})
+		.attr("height", function(d) { 
+			return height - y(+d.count)
+		})
+		.style("fill","DarkGray")
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th>Count:<td>' + d.count +  '</td></tr><tr><th>Offset:<td>' + d.offset +  '</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});
+
+}	
+
+		var critconf = {MAT: {"stroke": "#bd0026"}, CT: {"stroke": "#800026"}, Delist: {"stroke": "#fc4e2a"}}
+		
+		var lineFunction = d3.svg.line()
+			.x(function(d) { return d.x; })
+			.y(function(d) { return d.y; });
+		
+		addCriteria = function(s,type){
+		var thresh1 = s.append("g").attr("class", type)
+			.attr("transform", "translate(0," + margin.top  + ")")
+		thresh1.selectAll("path")
+		      .data([params.escdata[params.selected]])
+			  .enter()
+			  .append("path")
+		      .attr("class", "line")
+		      .attr("d", function (d) {
+				var points = [{x:margin.left,y:y(d[type])},{x:margin.left+width,y:y(d[type])}];
+		      return lineFunction(points);
+			  })
+			.style("stroke-width", 3)
+			.style("stroke-dasharray", ("8, 8"))
+			.style("stroke", function(d){
+				return critconf[type].stroke;
+			});	
+		}
+		
+			
+
+	if(spawndata && params.display.spawners){
+	//var scolors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a"];
+	var scolors = ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"].reverse();
+	svg0.append("g")
+		.attr("class","spawners")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.selectAll("rect")
+		.data(sdata)
+		.enter()
+		.append("rect")
+		.attr("width", bwidth1)
+		.attr("x",function(d){
+			return x(+d.SPAWNINGYEAR)-bwidth2;
+		})
+		.attr("y", function(d,i) {
+			return y(d[spawnvar] + d.offset);
+			//return y(d.COUNT)
+		})
+		.attr("height", function(d) { 
+			return height - y(+d[spawnvar])
+			//return y(+d.count); 
+		})
+		.style("fill",function(d){
+			return colorbrewer[params.svg.palette][7][6-d.mpg]
+		})
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th>MPG:<td>' + d.name +  '</td></tr><tr><th>Count:<td>' + d[spawnvar] +  '</td></tr><tr><th>Offset:<td>' + d.offset +  '</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		}); 
+		
+		if(params.display.MAT){
+			addCriteria(svg0,"MAT")
+			var mat_legend_label = "Min. Abundance Threshold";
+			var mat_colors = d3.scale.ordinal().range(["#bd0026"]).domain([mat_legend_label]);
+			addLineLegend(svg0,mat_colors,params.svg.legend.MAT.x,params.svg.legend.MAT.y,"MAT")			
+		}	
+	}
+	
+	
+	
+	if(params.display.escapement){
+		var geomean5Line = d3.svg.line()
+			.x(function(d) { return x(+d.year); })
+			.y(function(d) { return y(+d.geomean5); })
+			.interpolate("basis");
+
+		var geomean10Line = d3.svg.line()
+			.x(function(d) { return x(+d.year); })
+			.y(function(d) { return y(+d.geomean10); })
+			.interpolate("basis");			
+
+		var meanEscapeLine = d3.svg.line()
+			.x(function(d) { return x(+d.year); })
+			.y(function(d) { return y(+d.Ave4yr); })
+			.interpolate("basis");
+			
+		var meanEscapeLine10 = d3.svg.line()
+			.x(function(d) { return x(+d.year); })
+			.y(function(d) { return y(+d.Ave10yr); })
+			.interpolate("basis");			
+			
+		var trendLine = d3.svg.line()
+			.x(function(d) { return x(+d.year); })
+			.y(function(d) { return y(+d.etrend); })
+			.interpolate("basis");			
+
+		if(params.display.mean4yr){
+		var meandata = [];
+		escdata.data.forEach(function(d){
+			if(+d.Ave4yr>0)meandata.push(d);
+		})		
+		var escline = svg0
+			.append("g")
+			.attr("class", "meanEscapeLine")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+		escline.append("path")
+			.attr("class", "cum")
+			.attr("d", function (d) {
+				return meanEscapeLine(meandata);
+			})
+			.style("stroke-width", 3)
+			.style("fill","none")	
+			.style("stroke","#bd0026")
+		}
+		
+		if(params.display.mean10yr){
+		var meandata = [];
+		escdata.data.forEach(function(d){
+			if(+d.Ave10yr>0)meandata.push(d);
+		})		
+		var escline = svg0
+			.append("g")
+			.attr("class", "meanEscapeLine")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+		escline.append("path")
+			.attr("class", "cum")
+			.attr("d", function (d) {
+				return meanEscapeLine10(meandata);
+			})
+			.style("stroke-width", 3)
+			.style("fill","none")	
+			.style("stroke","black")
+		}		
+		
+		if(params.display.geomean5){
+		var gmean5data = [];
+		escdata.data.forEach(function(d){
+			if(+d.geomean5>0)gmean5data.push(d);
+		})		
+		var geo5line = svg0
+			.append("g")
+			.attr("class", "meanEscapeLine")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+		geo5line.append("path")
+			.attr("class", "geo5")
+			.attr("d", function (d) {
+				return geomean5Line(gmean5data);
+			})
+			.style("stroke-width", 3)
+			.style("fill","none")	
+			.style("stroke","black")
+		}
+
+		if(params.display.geomean10){
+		var gmean10data = [];
+		escdata.data.forEach(function(d){
+			if(+d.geomean10>0)gmean10data.push(d);
+		})		
+		var geo10line = svg0
+			.append("g")
+			.attr("class", "meanEscapeLine")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+		geo10line.append("path")
+			.attr("class", "geo10")
+			.attr("d", function (d) {
+				return geomean10Line(gmean10data);
+			})
+			.style("stroke-width", 3)
+			.style("fill","none")	
+			.style("stroke","black")
+		}		
+
+		if(params.display.etrend){
+		var trenddata = [];
+		escdata.data.forEach(function(d){
+			if(+d.etrend>0)trenddata.push(d);
+		})
+		var trendline = svg0
+			.append("g")
+			.attr("class", "trendLine")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+		trendline.append("path")
+			.attr("class", "cum")
+			.attr("d", function (d) {
+				return trendLine(trenddata);
+			})
+			.style("stroke-width", 3)
+			.style("stroke-dasharray", ("8, 8"))
+			.style("fill","none")	
+			.style("stroke","green")
+		}		
+		
+	}	
+	
+	svg0.append("text")      // text label for the x axis
+		.attr("transform", "translate(" + (margin.left + width/2) + " ," + (height + margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Year");
+		
+	svg0.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 10)
+        .attr("x",0 - (height/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Fish Count");	
+		
+getLegendColors = function(){
+	var colors = []
+	colorbrewer[params.svg.palette][7].forEach(function(d){colors.push(d)});
+	colors.reverse();
+	return colors;
+}
+
+var dam_legend_label = params.display.escapement ? "Dam Count (ex. escapement)" : "Dam Count (total)";
+var dam_colors = d3.scale.ordinal().range(["DimGray"]).domain([dam_legend_label]);
+if(params.display.damcount && damdata)addLegend(svg0,dam_colors,params.svg.legend.damcount.x,params.svg.legend.damcount.y,"dam")
+
+
+var esc_legend_label = params.display.spawners ? "Escapement (wild, ex. spawners)" : "Escapement (wild)";
+var esc_colors = d3.scale.ordinal().range(["DarkGray"]).domain([esc_legend_label]);
+if(params.display.escapement && escdata)addLegend(svg0,esc_colors,params.svg.legend.escapement.x,params.svg.legend.escapement.y,"escape")
+		
+
+if(spawndata && params.display.spawners){
+	var legend_colors = d3.scale.ordinal().range(getLegendColors()).domain(mpg_names);
+	addLegend(svg0,legend_colors,params.svg.legend.spawners.x,params.svg.legend.spawners.y,"spawn")
+	svg0.append('g')
+	.attr('class', 'legend')
+	.attr('transform', 'translate(' + (params.svg.legend.spawners.x-16) + ',' + (params.svg.legend.spawners.y-50) + ')')
+	.append('text')
+	.text(params.display.hos ? "Total Spawners by MPG" : "N.O. Spawners by MPG")
+	.style("font-weight","bold")
+}
+
+ var thermal = ["#67001f","#FF0a00","#FF2800","#FF4600","#FF6400","#FF8200","#FFf000","#0094ff","#0032ff","#0500ff","#888888"];
+ var getTempColor = function(d){
+	if(d == 99)d = "NA";
+	if(d == "NA")return thermal[10];
+	else if(d < 10)return thermal[9];
+	else if(d < 15)return thermal[8];
+	else if(d < 18)return thermal[7];
+	else if(d < 20)return thermal[6];
+	else if(d < 20.5)return thermal[5];
+	else if(d < 21)return thermal[4];
+	else if(d < 21.5)return thermal[3];
+	else if(d < 22)return thermal[2];
+	else if(d < 22.5)return thermal[1];
+	else return thermal[0];	
+} 
+
+var colorscale = d3.scale.ordinal().domain(["NA","< 10","10-15","15-18","18-20","20-20.5","20.5-21","21-21.5","21.5-22","22-22.5","> 22.5"].reverse()).range(thermal);
+
+
+if(spawndata && escdata && params.display.spawners && params.display.escapement){
+	var survdata = {}
+	escdata.data.forEach(function(d){
+		survdata[d.year.toString()] = {year: d.year, escapement: d.count, spawners: spawndata.sums[d.year.toString()]};
+	})
+	var sdata = [];
+	
+	Object.keys(survdata).forEach(function(d){
+		var s = survdata[d];
+		if(s.spawners > 0 && s.escapement > 0){
+			s.rate = s.spawners/s.escapement;
+			sdata.push(s);
+		}
+	});
+	var margin2 = params.svg2.margin;
+	var height2 = params.svg2.height - margin2.top - margin2.bottom;
+	var width2 = params.svg2.width - margin2.left - margin2.right;
+	var y2 = d3.scale.linear().domain([0,1.25]).range([height2,0])
+	yAxis2 = d3.svg.axis().scale(y2).orient("left").ticks(5);
+
+	var svg1 = d3.select("#svgdiv")
+		.append("svg")
+		.attr("id","losssvg")
+		.attr("height",params.svg2.height)
+		.attr("width",params.svg2.width)
+		
+	svg1.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + margin2.left + "," + (margin2.top + height2) + ")")
+      .call(xAxis)
+
+	svg1.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+      .call(yAxis2)
+	  
+	svg1.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30)
+        .attr("x",-10 - (height2/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Rate (spawn/escape)"); 
+
+	svg1.append("text")      // text label for the x axis
+		.attr("transform", "translate(" + (margin2.left + width2/2) + " ," + (params.svg2.height-5) + ")")
+        .style("text-anchor", "middle")
+        .text("Year");		
+
+		
+	if(params.meandata[params.selected]){
+		var mdata = params.meandata[params.selected];
+		var y3 = d3.scale.linear().range([height2,0])
+		y3.domain([0,d3.max(mdata, function(d) { return +d.flow; })]);
+		yAxis3 = d3.svg.axis().scale(y3).orient("right").ticks(5);
+
+		svg1.append("g")
+		.attr("class", "y axis")
+		.attr("transform", "translate(" + (margin2.left+width2) + "," + margin2.top + ")")
+		.call(yAxis3)	
+		
+		svg1.append("g")
+		.attr("class","meanflows")
+		.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+		.selectAll("rect")
+		.data(mdata)
+		.enter()
+		.append("rect")
+		.attr("width", bwidth1)
+		.attr("x",function(d){
+			return x(+d.year)-bwidth2;
+		})
+		.attr("y", function(d,i) {
+			return y3(+d.flow);
+		})
+		.attr("height", function(d) { 
+			return height2 - y3(+d.flow)
+		})
+		.style("fill",function(d){
+			return "DarkGray"//getTempColor(+d.temp)
+		})
+		.style("fill-opacity",.8)
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th align="left">Flow:<td>' + d3.format(".0f")(d.flow) +  '</td></tr><tr><th align="left">Temp:<td>' + d3.format(".2f")(d.temp) +  ' C</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});
+
+		svg1.append("g")
+		.attr("class","meanspills")
+		.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+		.selectAll("rect")
+		.data(mdata)
+		.enter()
+		.append("rect")
+		.attr("width", bwidth1)
+		.attr("x",function(d){
+			return x(+d.year)-bwidth2;
+		})
+		.attr("y", function(d,i) {
+			var spill = +d.spill
+			if(spill > 0) return y3(spill);
+			else return 0;
+		})
+		.attr("height", function(d) {
+			var spill = +d.spill
+			if(spill > 0) return height2 - y3(spill)
+			else return 0;
+		})
+		.style("fill",function(d){
+			return "Gray"//getTempColor(+d.temp)
+		})
+		.style("fill-opacity",.8)
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th>Spill:<td>' + d3.format(".0f")(d.spill) +  ' kcfs</td></tr><tr><td colspan="2" align="center">' + d3.format(".2f")(100*(+d.spill/+d.flow)) +  ' %</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});
+		
+	var flow_colors = d3.scale.ordinal().range(["DarkGray"]).domain(["Turbine"]);
+	var spill_colors = d3.scale.ordinal().range(["Gray"]).domain(["Spill"]);
+	addLegend(svg1,spill_colors,params.svg2.legend.flows.x,params.svg2.legend.flows.y,"flow1")
+	addLegend(svg1,flow_colors,params.svg2.legend.flows.x - 65,params.svg2.legend.flows.y,"flow2")
+		
+	svg1.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", width2+140)
+        .attr("x", -20 - (height2/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Mean Flow (kcfs)");
+/*
+		svg1
+		.append("rect")
+		.attr("x",margin2.left + width2 + 45)
+		.attr("y",margin2.top+height2 - 12)
+		.attr("width",bwidth1)
+		.attr("height",bwidth1)
+		.attr("r",4)
+		.style("fill","DarkGray")		
+*/		
+	}
+	//add the circles for the rate
+	svg1
+		.append("g")
+		.attr("transform", "translate(" + margin2.left + "," + (margin2.top) + ")")
+		.selectAll("circle")
+		.data(sdata)
+		.enter()
+		.append("circle")
+		.attr("cx",function(d){
+			return x(+d.year);
+		})
+		.attr("cy",function(d){
+			return y2(d.rate)
+		})
+		.attr("r",4)
+		.style("fill","gray")
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th align="left">Spawners:<td>' + d.spawners +  '</td></tr><tr><th align="left">Escapement:<td>' + d.escapement +  '</td></tr><tr><th align="left">Rate:<td>' + d3.format(".2f")(d.rate) +  '</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});
+
+		svg1
+		.append("circle")
+		.attr("cx",43)
+		.attr("cy",margin2.top+height2 + 1)
+		.attr("r",4)
+		.style("fill","Gray")
+
+		
+}
+		
+}
+
+var addLegend = function(s,color,xpos,ypos,type){
+	var legendRectSize = 12;
+	var legendSpacing = 4;
+	
+	var legend = s.selectAll('.legend.' + type)
+	.data(color.domain())
+	.enter()
+	.append('g')
+	.attr('class', 'legend ' + type)
+	.attr('transform', function(d, i) {
+    var height = legendRectSize + legendSpacing;
+    var offset =  height * color.domain().length / 2;
+    var horz = -2 * legendRectSize + xpos;
+    var vert = i * height - offset + ypos;
+    return 'translate(' + horz + ',' + vert + ')';
+	});
+
+	legend.append('rect')
+	.attr('width', legendRectSize)
+	.attr('height', legendRectSize)
+	.style('fill', color)
+	.style('stroke', color);
+	
+	legend.append('text')
+	.attr('x', legendRectSize + legendSpacing)
+	.attr('y', legendRectSize - legendSpacing)
+	.text(function(d) { return d; });
+}
+
+var addLineLegend = function(s,color,xpos,ypos,type){
+	var legendRectSize = 12;
+	var legendSpacing = 9;
+	
+	var legend = s.selectAll('.legend.' + type)
+	.data(color.domain())
+	.enter()
+	.append('g')
+	.attr('class', 'legend ' + type)
+	.attr('transform', function(d, i) {
+    var height = legendRectSize + legendSpacing;
+    var offset =  height * color.domain().length / 2;
+    var horz = -2 * legendRectSize + xpos;
+    var vert = i * height - offset + ypos;
+    return 'translate(' + horz + ',' + vert + ')';
+	});
+
+	legend.append("line")
+	.attr("x1", 0)
+	.attr("y1", 0)
+	.attr("x2", 15)
+	.attr("y2", 0)
+	.style('stroke-width', 3)
+	.style('stroke', color)
+	.style('fill', color)
+	
+	legend.append('text')
+	.attr('x', legendRectSize + legendSpacing)
+	.attr('y', legendRectSize - legendSpacing)
+	.text(function(d) { return d; });
+}
+
+		
+
+d3.csv("Steirs_long_5-16-2018.csv", function (edata) {
+d3.csv("CAX_compdata_2-16-2018.csv", function (sdata) {
+d3.csv("TAC_Dam_Counts_2-16-2018.csv", function (damdata) {
+d3.csv("WeightedMeanDamData.csv", function (meandata) {
+	
+	params.damdata = {};
+	params.meandata = {};
+	
+	damdata.forEach(function(d){
+		if(!params.damdata[d.group])params.damdata[d.group]=[];
+		params.damdata[d.group].push(d);
+	})
+	
+	meandata.forEach(function(d){
+		if(!params.meandata[d.group])params.meandata[d.group]=[];
+		params.meandata[d.group].push(d);
+	})	
+
+	sdata.forEach(function(d){
+		d.COUNT = +d.COUNT;
+		d.HCOUNT = +d.HCOUNT;
+		d.TCOUNT = d.COUNT + d.HCOUNT;
+		if(!params.spawndata[d.ESU_DPS])params.spawndata[d.ESU_DPS] = {mpgs: {}, max: 0, hmax: 0, tmax: 0, sums: {}, hsums:{}, tsums: {}, hdata: []}
+		if(!params.spawndata[d.ESU_DPS].mpgs[d.MAJORPOPGROUP])params.spawndata[d.ESU_DPS].mpgs[d.MAJORPOPGROUP] = {data: [], hdata: [], tdata: [], cum: 0, hcum: 0, tcum: 0};
+		if(!params.spawndata[d.ESU_DPS].sums[d.SPAWNINGYEAR])params.spawndata[d.ESU_DPS].sums[d.SPAWNINGYEAR] = 0;
+		if(!params.spawndata[d.ESU_DPS].hsums[d.SPAWNINGYEAR])params.spawndata[d.ESU_DPS].hsums[d.SPAWNINGYEAR] = 0;
+		if(!params.spawndata[d.ESU_DPS].tsums[d.SPAWNINGYEAR])params.spawndata[d.ESU_DPS].tsums[d.SPAWNINGYEAR] = 0;
+		params.spawndata[d.ESU_DPS].sums[d.SPAWNINGYEAR] += d.COUNT;
+		params.spawndata[d.ESU_DPS].hsums[d.SPAWNINGYEAR] += d.HCOUNT;
+		params.spawndata[d.ESU_DPS].tsums[d.SPAWNINGYEAR] += d.TCOUNT;
+		if(params.spawndata[d.ESU_DPS].sums[d.SPAWNINGYEAR] > params.spawndata[d.ESU_DPS].max)params.spawndata[d.ESU_DPS].max = params.spawndata[d.ESU_DPS].sums[d.SPAWNINGYEAR];
+		if(params.spawndata[d.ESU_DPS].hsums[d.SPAWNINGYEAR] > params.spawndata[d.ESU_DPS].hmax)params.spawndata[d.ESU_DPS].hmax = params.spawndata[d.ESU_DPS].hsums[d.SPAWNINGYEAR];
+		if(params.spawndata[d.ESU_DPS].tsums[d.SPAWNINGYEAR] > params.spawndata[d.ESU_DPS].tmax)params.spawndata[d.ESU_DPS].tmax = params.spawndata[d.ESU_DPS].tsums[d.SPAWNINGYEAR];
+		params.spawndata[d.ESU_DPS].mpgs[d.MAJORPOPGROUP].data.push(d);
+		params.spawndata[d.ESU_DPS].mpgs[d.MAJORPOPGROUP].cum += d.COUNT;
+		params.spawndata[d.ESU_DPS].mpgs[d.MAJORPOPGROUP].tcum += d.TCOUNT;
+	});
+	
+	Object.keys(params.spawndata).forEach(function(d){
+		Object.keys(params.spawndata[d].hsums).forEach(function(dd){
+			params.spawndata[d].hdata.push({ESU_DPS: d, SPAWNINGYEAR: dd, COUNT: params.spawndata[d].hsums[dd], offset: params.spawndata[d].sums[dd]})
+		});
+	});
+
+	Object.keys(params.spawndata).forEach(function(d){
+		var mpgs = [];
+		Object.keys(params.spawndata[d].mpgs).forEach(function(dd){
+			params.spawndata[d].mpgs[dd].name=dd;
+			mpgs.push(params.spawndata[d].mpgs[dd])
+		})
+		mpgs.sort(function(a,b){
+			return b.cum-a.cum;
+		});
+		params.spawndata[d].mpgs = mpgs;
+	})
+	console.log(edata)	
+	edata.forEach(function(d){
+		d.count = +d.count;
+		var group = field_lookup[d.group];
+		if(d.count > group.max)group.max = d.count;
+		group.data.push(d);
+	});
+	
+	plotData();
+
+	d3.select("#spinner").style("visibility",'hidden');
+});
+});
+});
+});
+</script>
+<script>
+$(".checkbox-dropdown").click(function () {
+    $(this).toggleClass("is-active");
+});
+
+$(".checkbox-dropdown ul").click(function(e) {
+    e.stopPropagation();
+});
+
+$(".checkbox-dropdown2").click(function () {
+	console.log("yo")
+    $(this).toggleClass("is-active");
+});
+
+$(".checkbox-dropdown2 ul").click(function(e) {
+    e.stopPropagation();
+});
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-18774702-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</html>
