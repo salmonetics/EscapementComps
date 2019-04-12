@@ -405,7 +405,24 @@ li{
 	</td>
 	</tr>
 	</table>
+
 	<div id="svgdiv"></div>
+	<div id="svgdiv2">
+		<div>
+		<strong>PDO Index</strong>
+		</div>
+	</div>		
+	<div id="svgdiv1">
+		<div>
+		<strong>Escapement to Spawner Rate</strong>
+		</div>
+	</div>
+	<div id="svgdiv3">
+		<div>
+		<strong>Weighted Mean Dam Flow</strong>
+		</div>
+	</div>
+
 	</div>	
 	</div>
 
@@ -493,7 +510,13 @@ var params = {
 			escapement: {x: 828, y: 425},
 			damcount: {x: 828, y: 405},
 			flows: {x: 893, y: 10}
-		}		
+		}
+	},
+	svg3: {
+		height: 275,
+		width: 1000,
+		margin: {top: 20, left: 100, right: 210, bottom: 50},
+		palette: "Greens"	
 	},	
 	display: {
 		geomean5: false,
@@ -561,12 +584,13 @@ var plotData = function(){
 	damdata_max=0
 	
 	if(damdata && params.display.damcount){
-		console.log("including damdata")
+		
 		damdata.forEach(function(d){
 			d.count = +d.count;
 			if(d.count>damdata_max)damdata_max=d.count
 		});
 		datamax.push(damdata_max);
+		console.log("pushing max damdata=" + damdata_max)
 	}	
 	
 	var spawndata_max = 0;
@@ -588,16 +612,21 @@ var plotData = function(){
 				else spawnoffsets[dd.SPAWNINGYEAR] = dd[spawnvar];
 				dd.name = d.name;
 				sdata.push(dd);
-				if(dd.offset > spawndata_max)spawndata_max = dd.offset
+				//if(dd.offset > spawndata_max)spawndata_max = dd.offset
+				if(spawnoffsets[dd.SPAWNINGYEAR] > spawndata_max)spawndata_max = spawnoffsets[dd.SPAWNINGYEAR]
 			});
 			mpg_names.push(d.name);
+			console.log("pushing max spawndata for " + d.name + " = " + spawndata_max)
 			datamax.push(spawndata_max)
 		})
 	}
 	
 	//var global_max = escdata.max;
 	
-	if(params.display.escapement)datamax.push(escdata.max)
+	if(params.display.escapement){
+		datamax.push(escdata.max)
+		console.log("pushing max escdata=" + escdata.max)
+	}
 	
 	function getMaxOfArray(numArray) {
 		return Math.max.apply(null, numArray);
@@ -610,7 +639,7 @@ var plotData = function(){
 	var height = params.svg.height - margin.top - margin.bottom;
 	var width = params.svg.width - margin.left - margin.right;
 	
-	var x = d3.scale.linear().domain([1978,2017]).range([0, width]), // value -> display
+	var x = d3.scale.linear().domain([1978,2020]).range([0, width]), // value -> display
 	y = d3.scale.linear().domain([0,(global_max)*1.1]).range([height,0]), // value -> display
 	xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.format("d")),
 	yAxis = d3.svg.axis().scale(y).orient("left");
@@ -973,7 +1002,7 @@ if(spawndata && params.display.spawners){
 
 var colorscale = d3.scale.ordinal().domain(["NA","< 10","10-15","15-18","18-20","20-20.5","20.5-21","21-21.5","21.5-22","22-22.5","> 22.5"].reverse()).range(thermal);
 
-
+d3.select("#svgdiv1").select("svg").remove()
 if(spawndata && escdata && params.display.spawners && params.display.escapement){
 	var survdata = {}
 	escdata.data.forEach(function(d){
@@ -994,7 +1023,7 @@ if(spawndata && escdata && params.display.spawners && params.display.escapement)
 	var y2 = d3.scale.linear().domain([0,1.25]).range([height2,0])
 	yAxis2 = d3.svg.axis().scale(y2).orient("left").ticks(5);
 
-	var svg1 = d3.select("#svgdiv")
+	var svg1 = d3.select("#svgdiv1")
 		.append("svg")
 		.attr("id","losssvg")
 		.attr("height",params.svg2.height)
@@ -1021,21 +1050,70 @@ if(spawndata && escdata && params.display.spawners && params.display.escapement)
 	svg1.append("text")      // text label for the x axis
 		.attr("transform", "translate(" + (margin2.left + width2/2) + " ," + (params.svg2.height-5) + ")")
         .style("text-anchor", "middle")
-        .text("Year");		
+        .text("Year");
 
-		
+	//add the circles for the rate
+	svg1
+		.append("g")
+		.attr("transform", "translate(" + margin2.left + "," + (margin2.top) + ")")
+		.selectAll("circle")
+		.data(sdata)
+		.enter()
+		.append("circle")
+		.attr("cx",function(d){
+			return x(+d.year);
+		})
+		.attr("cy",function(d){
+			return y2(d.rate)
+		})
+		.attr("r",4)
+		.style("fill","gray")
+		.on("mouseover", function(d) {
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 1); 
+			tipdiv.html('<table width="125"><tr><th align="left">Spawners:<td>' + d.spawners +  '</td></tr><tr><th align="left">Escapement:<td>' + d.escapement +  '</td></tr><tr><th align="left">Rate:<td>' + d3.format(".2f")(d.rate) +  '</td></tr></table>')  
+               .style("left", (d3.event.pageX + 20) + "px")     
+               .style("top", (d3.event.pageY - 14) + "px");    
+		})
+		.on("mouseout", function(d) {       
+			tipdiv.transition()        
+               .duration(20)      
+               .style("opacity", 0);   
+		});
+
+	svg1
+		.append("circle")
+		.attr("cx",43)
+		.attr("cy",margin2.top+height2 + 1)
+		.attr("r",4)
+		.style("fill","Gray")		
+
+	d3.select("#svgdiv3").select("svg").remove()
+  
 	if(params.meandata[params.selected]){
 		var mdata = params.meandata[params.selected];
 		var y3 = d3.scale.linear().range([height2,0])
 		y3.domain([0,d3.max(mdata, function(d) { return +d.flow; })]);
-		yAxis3 = d3.svg.axis().scale(y3).orient("right").ticks(5);
+		yAxis3 = d3.svg.axis().scale(y3).orient("left").ticks(5);
+		
+	var svg3 = d3.select("#svgdiv3")
+		.append("svg")
+		.attr("id","mflowsvg")
+		.attr("height",params.svg2.height)
+		.attr("width",params.svg2.width)
+		
+	svg3.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + margin2.left + "," + (margin2.top + height2) + ")")
+      .call(xAxis)
 
-		svg1.append("g")
+	svg3.append("g")
 		.attr("class", "y axis")
-		.attr("transform", "translate(" + (margin2.left+width2) + "," + margin2.top + ")")
+		.attr("transform", "translate(" + (margin2.left) + "," + (margin2.top) + ")")
 		.call(yAxis3)	
 		
-		svg1.append("g")
+	svg3.append("g")
 		.attr("class","meanflows")
 		.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
 		.selectAll("rect")
@@ -1070,7 +1148,7 @@ if(spawndata && escdata && params.display.spawners && params.display.escapement)
                .style("opacity", 0);   
 		});
 
-		svg1.append("g")
+		svg3.append("g")
 		.attr("class","meanspills")
 		.attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
 		.selectAll("rect")
@@ -1109,74 +1187,99 @@ if(spawndata && escdata && params.display.spawners && params.display.escapement)
                .style("opacity", 0);   
 		});
 		
-	var flow_colors = d3.scale.ordinal().range(["DarkGray"]).domain(["Turbine"]);
+	var flow_colors = d3.scale.ordinal().range(["DarkGray"]).domain(["PH"]);
 	var spill_colors = d3.scale.ordinal().range(["Gray"]).domain(["Spill"]);
-	addLegend(svg1,spill_colors,params.svg2.legend.flows.x,params.svg2.legend.flows.y,"flow1")
-	addLegend(svg1,flow_colors,params.svg2.legend.flows.x - 65,params.svg2.legend.flows.y,"flow2")
+	addLegend(svg3,spill_colors,params.svg2.legend.flows.x,params.svg2.legend.flows.y,"flow1")
+	addLegend(svg3,flow_colors,params.svg2.legend.flows.x - 65,params.svg2.legend.flows.y,"flow2")
 		
-	svg1.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", width2+140)
-        .attr("x", -20 - (height2/2))
+	svg3.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30)
+        .attr("x",-10 - (height2/2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Mean Flow (kcfs)");
-/*
-		svg1
-		.append("rect")
-		.attr("x",margin2.left + width2 + 45)
-		.attr("y",margin2.top+height2 - 12)
-		.attr("width",bwidth1)
-		.attr("height",bwidth1)
-		.attr("r",4)
-		.style("fill","DarkGray")		
-*/		
+	
 	}
-	//add the circles for the rate
-	svg1
-		.append("g")
-		.attr("transform", "translate(" + margin2.left + "," + (margin2.top) + ")")
-		.selectAll("circle")
-		.data(sdata)
-		.enter()
-		.append("circle")
-		.attr("cx",function(d){
-			return x(+d.year);
-		})
-		.attr("cy",function(d){
-			return y2(d.rate)
-		})
-		.attr("r",4)
-		.style("fill","gray")
-		.on("mouseover", function(d) {
-			tipdiv.transition()        
-               .duration(20)      
-               .style("opacity", 1); 
-			tipdiv.html('<table width="125"><tr><th align="left">Spawners:<td>' + d.spawners +  '</td></tr><tr><th align="left">Escapement:<td>' + d.escapement +  '</td></tr><tr><th align="left">Rate:<td>' + d3.format(".2f")(d.rate) +  '</td></tr></table>')  
-               .style("left", (d3.event.pageX + 20) + "px")     
-               .style("top", (d3.event.pageY - 14) + "px");    
-		})
-		.on("mouseout", function(d) {       
-			tipdiv.transition()        
-               .duration(20)      
-               .style("opacity", 0);   
-		});
-
-		svg1
-		.append("circle")
-		.attr("cx",43)
-		.attr("cy",margin2.top+height2 + 1)
-		.attr("r",4)
-		.style("fill","Gray")
 
 		
 }
+
+//plot PDO
+	d3.select("#svgdiv2").select("svg").remove()
+	var margin3 = params.svg3.margin;
+	var height3 = params.svg3.height - margin3.top - margin3.bottom;
+	var width3 = params.svg3.width - margin3.left - margin3.right;
+	var x3 = d3.time.scale().range([0, width3]).domain([params.dateFormat.parse("1978-01-01"),params.dateFormat.parse("2019-12-31")]);
+	var xAxis3 = d3.svg.axis().scale(x3).orient("bottom")//.tickFormat(d3.time.format("%b %Y"));	
+	var y3 = d3.scale.linear().domain([-3,3]).range([height3,0])
+	yAxis3 = d3.svg.axis().scale(y3).orient("left").ticks(5);
+
+	var svg2 = d3.select("#svgdiv2")
+		.append("svg")
+		.attr("id","pdosvg")
+		.attr("height",params.svg3.height)
+		.attr("width",params.svg3.width)
 		
+	svg2.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + margin3.left + "," + (margin3.top + height3) + ")")
+      .call(xAxis3)
+
+	svg2.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")")
+      .call(yAxis3)
+	  
+	svg2.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30)
+        .attr("x",-10 - (height2/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Index"); 
+
+	svg2.append("text")      // text label for the x axis
+		.attr("transform", "translate(" + (margin3.left + width3/2) + " ," + (params.svg3.height-5) + ")")
+        .style("text-anchor", "middle")
+        .text("Year");		
+
+	
+	var lineFunction = d3.svg.line()
+		.x(function(d) { return d.x; })
+		.y(function(d) { return d.y; })
+		.interpolate("linear");
+
+		
+	
+	svg2
+		.append("g")
+		.attr("transform", "translate(" + margin3.left + " ," + margin3.top + ")")
+		.selectAll("path.pdo")
+		.data(params.pdodata)
+		.enter()
+		.append("path")
+		.attr("class", "pdo")
+		.attr("d", function (d) {
+			var x = x3(d.date)
+			var y1 = y3(0);
+			var y2 = y3(d.index)
+			var points = [{x:x,y:y1},{x:x,y:y2}];
+			return lineFunction(points);
+		})
+		.style("stroke-width", 2)
+		.style("stroke", function(d){
+			return d.sign == "negative" ? "green" : "red"
+		});		
+		
+	setFilterToggle("svgdiv1")
+	setFilterToggle("svgdiv2")	
 }
 
 var addLegend = function(s,color,xpos,ypos,type){
-	var legendRectSize = 12;
+	var legendRectSize = 16;
 	var legendSpacing = 4;
+	var legendXSpacing = 4;
 	
 	var legend = s.selectAll('.legend.' + type)
 	.data(color.domain())
@@ -1198,7 +1301,7 @@ var addLegend = function(s,color,xpos,ypos,type){
 	.style('stroke', color);
 	
 	legend.append('text')
-	.attr('x', legendRectSize + legendSpacing)
+	.attr('x', legendRectSize + legendXSpacing)
 	.attr('y', legendRectSize - legendSpacing)
 	.text(function(d) { return d; });
 }
@@ -1235,12 +1338,14 @@ var addLineLegend = function(s,color,xpos,ypos,type){
 	.text(function(d) { return d; });
 }
 
+
 		
 
-d3.csv("Steirs_long_5-16-2018.csv", function (edata) {
-d3.csv("CAX_compdata_2-16-2018.csv", function (sdata) {
-d3.csv("TAC_Dam_Counts_2-16-2018.csv", function (damdata) {
-d3.csv("WeightedMeanDamData.csv", function (meandata) {
+d3.csv("https://salmonetics.github.io/EscapementComps/data/Escapement_3-6-2019.csv", function (edata) {
+d3.csv("https://salmonetics.github.io/EscapementComps/data/CAX_compdata_03-25-2019.csv", function (sdata) {
+d3.csv("https://salmonetics.github.io/EscapementComps/data/TAC_Dam_Counts-04-12-2018.csv", function (damdata) {
+d3.csv("https://salmonetics.github.io/EscapementComps/data/WeightedMeanDamData.csv", function (meandata) {
+d3.csv("https://salmonetics.github.io/EscapementComps/data/PDO_1980-2018.csv", function (pdodata) {
 	
 	params.damdata = {};
 	params.meandata = {};
@@ -1300,15 +1405,35 @@ d3.csv("WeightedMeanDamData.csv", function (meandata) {
 		group.data.push(d);
 	});
 	
+	params.dateFormat = d3.time.format("%Y-%m-%d");
+	params.pdodata = pdodata;
+	params.pdodata.forEach(function(d){
+		d.date = params.dateFormat.parse(d.date)
+	})
 	plotData();
-
 	d3.select("#spinner").style("visibility",'hidden');
+});
 });
 });
 });
 });
 </script>
 <script>
+var setFilterToggle = function(id){
+	var div = d3.select("#" + id);
+	var svg = div.select("svg");
+	div
+		.select("strong")
+		.on("click",function(){
+			if(svg.style("display")=="inline")svg.style("display","none")
+			else {
+				svg.style("display","inline")
+			}
+		})
+		.style("cursor","pointer")
+}
+
+
 $(".checkbox-dropdown").click(function () {
     $(this).toggleClass("is-active");
 });
